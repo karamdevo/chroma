@@ -23,10 +23,9 @@ import android.os.Bundle
 import android.support.annotation.ColorInt
 import android.support.v4.app.DialogFragment
 import android.view.WindowManager
-import me.priyesh.chroma.internal.ChromaView
 import kotlin.properties.Delegates
 
-class ChromaDialog constructor() : DialogFragment() {
+class ChromaDialog : DialogFragment() {
 
   companion object {
     private val ArgInitialColor = "arg_initial_color"
@@ -76,20 +75,20 @@ class ChromaDialog constructor() : DialogFragment() {
   }
 
   private var listener: ColorSelectListener? = null
-  private var chromaView: ChromaView by Delegates.notNull<ChromaView>()
+  private var chromaView: ChromaView by Delegates.notNull()
 
   override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
     chromaView = if (savedInstanceState == null) {
-      ChromaView(
-          arguments.getInt(ArgInitialColor),
-          ColorMode.fromName(arguments.getString(ArgColorModeName)),
-          context)
+        ChromaView(
+                arguments!!.getInt(ArgInitialColor),
+                ColorMode.fromName(arguments!!.getString(ArgColorModeName)),
+                context!!)
     } else {
-      ChromaView(
-          savedInstanceState.getInt(ArgInitialColor, ChromaView.DefaultColor),
-          ColorMode.fromName(savedInstanceState.getString(ArgColorModeName)),
-          context
-      )
+        ChromaView(
+                savedInstanceState.getInt(ArgInitialColor, ChromaView.DefaultColor),
+                ColorMode.fromName(savedInstanceState.getString(ArgColorModeName)),
+                context!!
+        )
     }
 
     chromaView.enableButtonBar(object : ChromaView.ButtonBarListener {
@@ -115,8 +114,8 @@ class ChromaDialog constructor() : DialogFragment() {
     }
   }
 
-  override fun onSaveInstanceState(outState: Bundle?) {
-    outState?.putAll(makeArgs(chromaView.currentColor, chromaView.colorMode))
+  override fun onSaveInstanceState(outState: Bundle) {
+    outState.putAll(makeArgs(chromaView.currentColor, chromaView.colorMode))
     super.onSaveInstanceState(outState)
   }
 
