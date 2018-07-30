@@ -44,7 +44,7 @@ internal class ChannelView(
     bindViews(rootView)
   }
 
-  private fun bindViews(root: View): Unit {
+  private fun bindViews(root: View) {
     (root.findViewById(R.id.label) as TextView).text = context.getString(channel.nameResourceId)
 
     val progressView = root.findViewById(R.id.progress_text) as TextView
@@ -66,7 +66,7 @@ internal class ChannelView(
     })
   }
 
-  fun registerListener(listener: () -> Unit): Unit {
+  fun registerListener(listener: () -> Unit) {
     this.listener = listener
   }
 

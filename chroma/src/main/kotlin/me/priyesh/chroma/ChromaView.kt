@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-package me.priyesh.chroma.internal
+package me.priyesh.chroma
 
 import android.content.Context
 import android.graphics.Color
 import android.support.annotation.ColorInt
-import android.util.AttributeSet
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
-import me.priyesh.chroma.ColorMode
-import me.priyesh.chroma.R
+import me.priyesh.chroma.internal.ChannelView
 
 internal class ChromaView : RelativeLayout {
 
@@ -45,11 +44,11 @@ internal class ChromaView : RelativeLayout {
     init()
   }
 
-  private fun init(): Unit {
+  private fun init() {
     inflate(context, R.layout.chroma_view, this)
     clipToPadding = false
 
-    val colorView = findViewById(R.id.color_view)
+    val colorView = findViewById<View>(R.id.color_view)
     colorView.setBackgroundColor(currentColor)
 
     val channelViews = colorMode.channels.map { ChannelView(it, currentColor, context) }
@@ -59,7 +58,7 @@ internal class ChromaView : RelativeLayout {
       colorView.setBackgroundColor(currentColor)
     }
 
-    val channelContainer = findViewById(R.id.channel_container) as ViewGroup
+    val channelContainer = findViewById<ViewGroup>(R.id.channel_container)
     channelViews.forEach { it ->
       channelContainer.addView(it)
 
@@ -76,10 +75,10 @@ internal class ChromaView : RelativeLayout {
     fun onNegativeButtonClick()
   }
 
-  internal fun enableButtonBar(listener: ButtonBarListener?): Unit {
-    with(findViewById(R.id.button_bar)) {
-      val positiveButton = findViewById(R.id.positive_button)
-      val negativeButton = findViewById(R.id.negative_button)
+  internal fun enableButtonBar(listener: ButtonBarListener?) {
+    with(findViewById<View>(R.id.button_bar)) {
+      val positiveButton = findViewById<View>(R.id.positive_button)
+      val negativeButton = findViewById<View>(R.id.negative_button)
 
       if (listener != null) {
         visibility = VISIBLE
