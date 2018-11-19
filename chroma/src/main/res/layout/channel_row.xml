@@ -32,15 +32,16 @@
         android:fontFamily="sans-serif-medium"
         tools:text="R"/>
 
-    <TextView
+    <EditText
         android:id="@+id/progress_text"
-        android:layout_width="30dp"
+        android:layout_width="40dp"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="24dp"
         android:layout_marginRight="24dp"
+        android:inputType="number"
         android:fontFamily="sans-serif-light"
         android:gravity="center"
         tools:text="255"/>

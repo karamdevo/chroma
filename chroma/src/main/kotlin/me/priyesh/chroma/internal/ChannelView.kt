@@ -18,12 +18,19 @@ package me.priyesh.chroma.internal
 
 import android.content.Context
 import android.support.annotation.ColorInt
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.View
+import android.widget.EditText
 import android.widget.RelativeLayout
 import android.widget.SeekBar
 import android.widget.TextView
 import me.priyesh.chroma.R
 import me.priyesh.chroma.ColorMode
+import me.priyesh.chroma.toEditable
+import kotlin.math.max
+import kotlin.math.min
 
 internal class ChannelView(
     val channel: ColorMode.Channel,
@@ -47,10 +54,39 @@ internal class ChannelView(
   private fun bindViews(root: View) {
     (root.findViewById(R.id.label) as TextView).text = context.getString(channel.nameResourceId)
 
-    val progressView = root.findViewById(R.id.progress_text) as TextView
-    progressView.text = channel.progress.toString()
-
+    val progressView = root.findViewById(R.id.progress_text) as EditText
     val seekbar = root.findViewById(R.id.seekbar) as SeekBar
+
+    progressView.text = channel.progress.toEditable()
+    progressView.addTextChangedListener(object : TextWatcher {
+      override fun afterTextChanged(s: Editable?) {
+        var start = progressView.selectionStart
+        var end = progressView.selectionEnd
+
+        val originalProgress = s.toString().toIntOrNull()
+        var progress = originalProgress ?: {
+          start = 1
+          end = 1
+          0
+        }.invoke()
+        progress = min(channel.max, max(channel.min, progress))
+
+        channel.progress = progress
+        seekbar.progress = progress
+        if (progress != originalProgress) {
+          progressView.text = progress.toEditable()
+        }
+
+        listener?.invoke()
+
+        val len = progress.toString().length
+        progressView.setSelection(min(start, len), min(end, len))
+      }
+
+      override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+      override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+    })
+
     seekbar.max = channel.max
     seekbar.progress = channel.progress
     seekbar.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
@@ -60,7 +96,7 @@ internal class ChannelView(
 
       override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
         channel.progress = progress
-        progressView.text = progress.toString()
+        progressView.text = progress.toEditable()
         listener?.invoke()
       }
     })

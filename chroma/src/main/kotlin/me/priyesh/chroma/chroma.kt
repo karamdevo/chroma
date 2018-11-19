@@ -2,6 +2,7 @@ package me.priyesh.chroma
 
 import android.content.Context
 import android.graphics.Color
+import android.text.Editable
 import android.util.DisplayMetrics
 import android.view.WindowManager
 
@@ -25,3 +26,5 @@ private fun hsv(color: Int, index: Int, multiplier: Int = 1): Int {
   Color.colorToHSV(color, hsv)
   return (hsv[index] * multiplier).toInt()
 }
+
+fun Any.toEditable(): Editable = Editable.Factory.getInstance().newEditable(toString())
