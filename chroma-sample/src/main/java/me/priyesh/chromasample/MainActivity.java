@@ -26,7 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import butterknife.Bind;
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import me.priyesh.chroma.ChromaDialog;
@@ -39,9 +39,9 @@ public class MainActivity extends AppCompatActivity {
   private static final String KEY_COLOR = "extra_color";
   private static final String KEY_COLOR_MODE = "extra_color_mode";
 
-  @Bind(R.id.toolbar) Toolbar mToolbar;
-  @Bind(R.id.text_view) TextView mColorTextView;
-  @Bind(R.id.color_mode_spinner) Spinner mColorModeSpinner;
+  @BindView(R.id.toolbar) Toolbar mToolbar;
+  @BindView(R.id.text_view) TextView mColorTextView;
+  @BindView(R.id.color_mode_spinner) Spinner mColorModeSpinner;
 
   private int mColor;
 
