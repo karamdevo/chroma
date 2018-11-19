@@ -17,6 +17,8 @@
 package me.priyesh.chroma.internal
 
 import android.content.Context
+import android.content.res.ColorStateList
+import android.os.Build
 import android.support.annotation.ColorInt
 import android.text.Editable
 import android.text.TextUtils
@@ -100,6 +102,23 @@ internal class ChannelView(
         listener?.invoke()
       }
     })
+  }
+
+  fun applyColor(color: Int) {
+      val stateList = ColorStateList.valueOf(color)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+      findViewById<SeekBar>(R.id.seekbar).apply {
+        thumbTintList = stateList
+        progressTintList = stateList
+        progressBackgroundTintList = stateList
+      }
+    }
+    findViewById<EditText>(R.id.progress_text).apply {
+      highlightColor = color
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        backgroundTintList = stateList
+      }
+    }
   }
 
   fun registerListener(listener: () -> Unit) {

@@ -21,6 +21,7 @@ import android.graphics.Color
 import android.support.annotation.ColorInt
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import me.priyesh.chroma.internal.ChannelView
@@ -35,6 +36,7 @@ class ChromaView : RelativeLayout {
   @ColorInt var currentColor: Int private set
 
   val colorMode: ColorMode
+  private var channelViews: List<ChannelView>? = null
 
   constructor(context: Context) : this(DefaultColor, DefaultModel, context)
 
@@ -48,18 +50,17 @@ class ChromaView : RelativeLayout {
     inflate(context, R.layout.chroma_view, this)
     clipToPadding = false
 
-    val colorView = findViewById<View>(R.id.color_view)
-    colorView.setBackgroundColor(currentColor)
+    channelViews = colorMode.channels.map { ChannelView(it, currentColor, context) }
 
-    val channelViews = colorMode.channels.map { ChannelView(it, currentColor, context) }
+    applyColor()
 
     val seekbarChangeListener: () -> Unit = {
-      currentColor = colorMode.evaluateColor(channelViews.map { it.channel })
-      colorView.setBackgroundColor(currentColor)
+      currentColor = colorMode.evaluateColor(channelViews!!.map { it.channel })
+      applyColor()
     }
 
     val channelContainer = findViewById<ViewGroup>(R.id.channel_container)
-    channelViews.forEach { it ->
+    channelViews!!.forEach { it ->
       channelContainer.addView(it)
 
       val layoutParams = it.layoutParams as LinearLayout.LayoutParams
@@ -67,6 +68,17 @@ class ChromaView : RelativeLayout {
       layoutParams.bottomMargin = resources.getDimensionPixelSize(R.dimen.channel_view_margin_bottom)
 
       it.registerListener(seekbarChangeListener)
+    }
+  }
+
+  fun applyColor() {
+    findViewById<View>(R.id.color_view).setBackgroundColor(currentColor)
+    with(findViewById<View>(R.id.button_bar)) {
+      findViewById<Button>(R.id.positive_button).setTextColor(currentColor)
+      findViewById<Button>(R.id.negative_button).setTextColor(currentColor)
+    }
+    channelViews?.forEach {
+      it.applyColor(currentColor)
     }
   }
 
