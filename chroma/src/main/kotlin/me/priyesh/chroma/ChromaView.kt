@@ -17,14 +17,23 @@
 package me.priyesh.chroma
 
 import android.content.Context
+import android.content.res.ColorStateList
 import android.graphics.Color
+import android.os.Build
 import android.support.annotation.ColorInt
+import android.support.v4.graphics.ColorUtils
+import android.support.v7.graphics.Palette
+import android.text.Editable
+import android.text.TextUtils
+import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import me.priyesh.chroma.internal.ChannelView
+import kotlin.math.min
 
 class ChromaView : RelativeLayout {
 
@@ -37,6 +46,7 @@ class ChromaView : RelativeLayout {
 
   val colorMode: ColorMode
   private var channelViews: List<ChannelView>? = null
+  private var hexView: EditText? = null
 
   constructor(context: Context) : this(DefaultColor, DefaultModel, context)
 
@@ -51,6 +61,7 @@ class ChromaView : RelativeLayout {
     clipToPadding = false
 
     channelViews = colorMode.channels.map { ChannelView(it, currentColor, context) }
+    hexView = findViewById(R.id.hex_view)
 
     applyColor()
 
@@ -69,7 +80,40 @@ class ChromaView : RelativeLayout {
 
       it.registerListener(seekbarChangeListener)
     }
+    hexView?.addTextChangedListener(object : TextWatcher {
+      override fun afterTextChanged(s: Editable?) {
+        var selection = hexView!!.selectionEnd
+
+        val original = s.toString()
+        if(!TextUtils.isEmpty(original)) {
+          var str = original.removePrefix("#").toUpperCase().filter { it in "0123456789ABCDEF"}
+          str = "#${str.substring(0 until min(colorMode.hexLength, str.length))}"
+          if (str != original) {
+            hexView!!.text = str.toEditable()
+            selection += str.length - original.length
+            try {
+              currentColor = Color.parseColor(str)
+              fromHex = true
+              applyColor()
+              fromHex = false
+              channelViews?.forEach {
+                it.setByColor(currentColor)
+              }
+            } catch (ignored: Exception) {}
+          }
+        }
+
+        val len = hexView!!.length()
+        hexView!!.setSelection(min(selection, len), min(selection, len))
+      }
+
+      override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+      override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+    })
   }
+
+ // TODO remove all these messy state handling hacks
+  var fromHex = false
 
   fun applyColor() {
     findViewById<View>(R.id.color_view).setBackgroundColor(currentColor)
@@ -79,6 +123,16 @@ class ChromaView : RelativeLayout {
     }
     channelViews?.forEach {
       it.applyColor(currentColor)
+    }
+
+    val swatch = Palette.Swatch(currentColor, 1)
+    hexView?.apply {
+      if (!fromHex) { text = "#${colorMode.toHex(colorMode.evaluateColor(colorMode.channels))}".toEditable() }
+      setTextColor(swatch.bodyTextColor)
+      highlightColor = swatch.titleTextColor
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+        backgroundTintList = ColorStateList.valueOf(swatch.titleTextColor)
+      }
     }
   }
 

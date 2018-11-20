@@ -62,6 +62,7 @@ internal class ChannelView(
     progressView.text = channel.progress.toEditable()
     progressView.addTextChangedListener(object : TextWatcher {
       override fun afterTextChanged(s: Editable?) {
+        if (silenceListener) return
         var start = progressView.selectionStart
         var end = progressView.selectionEnd
 
@@ -97,15 +98,22 @@ internal class ChannelView(
       override fun onStopTrackingTouch(seekbar: SeekBar?) { }
 
       override fun onProgressChanged(seekbar: SeekBar?, progress: Int, fromUser: Boolean) {
-        channel.progress = progress
+        if (!silenceListener) channel.progress = progress
         progressView.text = progress.toEditable()
-        listener?.invoke()
+        if (!silenceListener) listener?.invoke()
       }
     })
   }
+  // TODO remove all these messy state handling hacks
+  var silenceListener: Boolean = false
+  fun setByColor(color: Int) {
+    silenceListener = true
+    findViewById<SeekBar>(R.id.seekbar).progress = channel.toProgress.invoke(color)
+    silenceListener = false
+  }
 
   fun applyColor(color: Int) {
-      val stateList = ColorStateList.valueOf(color)
+    val stateList = ColorStateList.valueOf(color)
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       findViewById<SeekBar>(R.id.seekbar).apply {
         thumbTintList = stateList

@@ -21,6 +21,7 @@ import android.graphics.Color
 enum class ColorMode {
 
   ARGB {
+    override val hexLength = 8
     override val channels: List<Channel> = listOf(
         Channel(R.string.channel_alpha, 0, 255, Color::alpha),
         Channel(R.string.channel_red, 0, 255, Color::red),
@@ -30,20 +31,26 @@ enum class ColorMode {
 
     override fun evaluateColor(channels: List<Channel>): Int = Color.argb(
         channels[0].progress, channels[1].progress, channels[2].progress, channels[3].progress)
+
+    override fun toHex(color: Int): String = String.format("%08X", color).toUpperCase()
   },
 
   RGB {
+    override val hexLength = 6
     override val channels: List<Channel> = ARGB.channels.drop(1)
 
     override fun evaluateColor(channels: List<Channel>): Int = Color.rgb(
         channels[0].progress, channels[1].progress, channels[2].progress)
+
+    override fun toHex(color: Int): String = String.format("%06X", (0xFFFFFF and color)).toUpperCase()
   },
 
   HSV {
+    override val hexLength = 6
     override val channels: List<Channel> = listOf(
         Channel(R.string.channel_hue, 0, 360, ::hue),
-        Channel(R.string.channel_saturation, 0, 100, ::saturation),
-        Channel(R.string.channel_value, 0, 100, ::value)
+        Channel(R.string.channel_saturation, 0, 100, ::saturation, { color -> saturation(color) * 100 }),
+        Channel(R.string.channel_value, 0, 100, ::value, { color -> value(color) * 100 })
     )
 
     override fun evaluateColor(channels: List<Channel>): Int = Color.HSVToColor(
@@ -52,15 +59,22 @@ enum class ColorMode {
             (channels[1].progress / 100.0).toFloat(),
             (channels[2].progress / 100.0).toFloat()
         ))
+
+    override fun toHex(color: Int): String = RGB.toHex(color)
   };
 
-  abstract internal val channels: List<Channel>
+  internal abstract val hexLength: Int
 
-  abstract internal fun evaluateColor(channels: List<Channel>): Int
+  internal abstract val channels: List<Channel>
+
+  internal abstract fun evaluateColor(channels: List<Channel>): Int
+
+  internal abstract fun toHex(color: Int): String
 
   internal data class Channel(val nameResourceId: Int,
                               val min: Int, val max: Int,
                               val extractor: (color: Int) -> Int,
+                              val toProgress: (color: Int) -> Int = { color -> extractor.invoke(color) },
                               var progress: Int = 0)
 
   companion object {
