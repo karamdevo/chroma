@@ -10,6 +10,7 @@
         android:layout_width="@dimen/color_view_width"
         android:layout_height="match_parent"
         android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         tools:background="@android:color/holo_blue_bright"/>
 
     <LinearLayout
@@ -19,6 +20,7 @@
         android:layout_alignParentTop="true"
         android:layout_below="@id/color_view"
         android:layout_toRightOf="@id/color_view"
+        android:layout_toEndOf="@id/color_view"
         android:orientation="vertical"/>
 
     <include
@@ -27,5 +29,6 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBottom="@id/color_view"
-        android:layout_alignParentRight="true"/>
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true" />
 </RelativeLayout>
