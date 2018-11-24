@@ -86,7 +86,7 @@ class ChromaView : RelativeLayout {
                 val idx = dstart + index
                 (c == '#' && idx == 0 && !dest.contains('#')) || c in "0123456789ABCDEF"
               }
-              if (dstart == 0 && filtered.getOrNull(0) != '#' && !dest.contains('#')) {
+              if (dstart == 0 && filtered.getOrNull(0) != '#' && !dest.removeRange(dstart until dend).contains('#')) {
                 filtered.padStart(1, '#')
               } else filtered
             })
