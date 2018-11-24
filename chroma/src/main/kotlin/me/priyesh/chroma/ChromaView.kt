@@ -21,6 +21,7 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.support.annotation.ColorInt
+import android.support.v4.graphics.ColorUtils
 import android.support.v7.graphics.Palette
 import android.text.Editable
 import android.text.InputFilter
@@ -123,7 +124,7 @@ class ChromaView : RelativeLayout {
       it.applyColor(currentColor)
     }
 
-    val swatch = Palette.Swatch(currentColor, 1)
+    val swatch = Palette.Swatch(ColorUtils.setAlphaComponent(currentColor, 255), 1)
     hexView?.apply {
       if (!fromHex) { text = "#${colorMode.toHex(colorMode.evaluateColor(colorMode.channels))}".toEditable() }
       setTextColor(swatch.bodyTextColor)
