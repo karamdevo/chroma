@@ -21,9 +21,9 @@ import android.content.res.ColorStateList
 import android.graphics.Color
 import android.os.Build
 import android.support.annotation.ColorInt
-import android.support.v4.graphics.ColorUtils
 import android.support.v7.graphics.Palette
 import android.text.Editable
+import android.text.InputFilter
 import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.View
@@ -33,7 +33,6 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import me.priyesh.chroma.internal.ChannelView
-import kotlin.math.min
 
 class ChromaView : RelativeLayout {
 
@@ -80,17 +79,20 @@ class ChromaView : RelativeLayout {
 
       it.registerListener(seekbarChangeListener)
     }
+    hexView?.filters = arrayOf(InputFilter.LengthFilter(colorMode.hexLength + 1), InputFilter.AllCaps(),
+            InputFilter { source, start, end, dest, dstart, dend ->
+              val filtered = source.filterIndexed { index, c ->
+                val idx = dstart + index
+                (c == '#' && idx == 0 && !dest.contains('#')) || c in "0123456789ABCDEF"
+              }
+              if (dstart == 0 && filtered.getOrNull(0) != '#' && !dest.contains('#')) {
+                filtered.padStart(1, '#')
+              } else filtered
+            })
     hexView?.addTextChangedListener(object : TextWatcher {
       override fun afterTextChanged(s: Editable?) {
-        var selection = hexView!!.selectionEnd
-
-        val original = s.toString()
-        if(!TextUtils.isEmpty(original)) {
-          var str = original.removePrefix("#").toUpperCase().filter { it in "0123456789ABCDEF"}
-          str = "#${str.substring(0 until min(colorMode.hexLength, str.length))}"
-          if (str != original) {
-            hexView!!.text = str.toEditable()
-            selection += str.length - original.length
+        val str = s.toString()
+        if(!TextUtils.isEmpty(str)) {
             try {
               currentColor = Color.parseColor(str)
               fromHex = true
@@ -100,11 +102,7 @@ class ChromaView : RelativeLayout {
                 it.setByColor(currentColor)
               }
             } catch (ignored: Exception) {}
-          }
         }
-
-        val len = hexView!!.length()
-        hexView!!.setSelection(min(selection, len), min(selection, len))
       }
 
       override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
