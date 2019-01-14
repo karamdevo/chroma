@@ -80,6 +80,9 @@ class ChromaView : RelativeLayout {
 
       it.registerListener(seekbarChangeListener)
     }
+    if (colorMode == ColorMode.ARGB) {
+      hexView?.layoutParams?.width = resources.getDimensionPixelSize(R.dimen.hex_view_width_argb)
+    }
     hexView?.filters = arrayOf(InputFilter.LengthFilter(colorMode.hexLength + 1), InputFilter.AllCaps(),
             InputFilter { source, start, end, dest, dstart, dend ->
               val filtered = source.filterIndexed { index, c ->
