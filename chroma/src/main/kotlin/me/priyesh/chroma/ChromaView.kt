@@ -34,6 +34,10 @@ import android.widget.EditText
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import me.priyesh.chroma.internal.ChannelView
+import android.graphics.drawable.RippleDrawable
+import android.graphics.drawable.Drawable
+import android.graphics.drawable.ShapeDrawable
+
 
 class ChromaView : RelativeLayout {
 
@@ -47,6 +51,8 @@ class ChromaView : RelativeLayout {
   val colorMode: ColorMode
   private var channelViews: List<ChannelView>? = null
   private var hexView: EditText? = null
+
+  private var updateClickHandler: ((Palette.Swatch) -> Unit)? = null
 
   constructor(context: Context) : this(DefaultColor, DefaultModel, context)
 
@@ -136,11 +142,16 @@ class ChromaView : RelativeLayout {
         backgroundTintList = ColorStateList.valueOf(swatch.titleTextColor)
       }
     }
+    updateClickHandler?.invoke(swatch)
   }
 
   interface ButtonBarListener {
     fun onPositiveButtonClick(color: Int)
     fun onNegativeButtonClick()
+  }
+
+  interface PreviewClickListener {
+    fun onClick(color: Int)
   }
 
   fun enableButtonBar(listener: ButtonBarListener?) {
@@ -158,5 +169,29 @@ class ChromaView : RelativeLayout {
         negativeButton.setOnClickListener(null)
       }
     }
+  }
+
+  fun enablePreviewClick(listener: ChromaView.PreviewClickListener) {
+    with(findViewById<View>(R.id.click_handler)) {
+      setOnClickListener { listener.onClick(currentColor) }
+      var color = Color.TRANSPARENT
+      updateClickHandler = {
+        if (it.bodyTextColor != color) {
+          color = it.bodyTextColor
+          val pressedColor = ColorStateList.valueOf(color)
+          val rippleColor = getRippleColor(color)
+          background = RippleDrawable(
+                  pressedColor,
+                  null,
+                  rippleColor
+          )
+        }
+      }
+      applyColor()
+    }
+  }
+
+  private fun getRippleColor(color: Int): Drawable {
+    return ShapeDrawable().apply { paint.color = color }
   }
 }

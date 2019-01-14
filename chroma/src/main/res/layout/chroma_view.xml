@@ -11,6 +11,12 @@
         android:layout_height="@dimen/color_view_height"
         tools:background="@android:color/holo_blue_bright">
 
+        <View
+            android:id="@+id/click_handler"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="?android:selectableItemBackground" />
+
         <EditText
             android:id="@+id/hex_view"
             android:textAlignment="center"
