@@ -133,7 +133,7 @@ class ChromaView : RelativeLayout {
       it.applyColor(currentColor)
     }
 
-    val swatch = Palette.Swatch(ColorUtils.setAlphaComponent(currentColor, 255), 1)
+    val swatch = Palette.Swatch(ColorUtils.compositeColors(currentColor, Color.WHITE), 1)
     hexView?.apply {
       if (!fromHex) { text = "#${colorMode.toHex(colorMode.evaluateColor(colorMode.channels))}".toEditable() }
       setTextColor(swatch.bodyTextColor)
