@@ -20,6 +20,7 @@ import android.content.Context
 import android.content.res.ColorStateList
 import android.os.Build
 import android.support.annotation.ColorInt
+import android.support.v4.graphics.ColorUtils
 import android.text.Editable
 import android.text.TextUtils
 import android.text.TextWatcher
@@ -30,6 +31,7 @@ import android.widget.SeekBar
 import android.widget.TextView
 import me.priyesh.chroma.R
 import me.priyesh.chroma.ColorMode
+import me.priyesh.chroma.ensureTextContrast
 import me.priyesh.chroma.toEditable
 import kotlin.math.max
 import kotlin.math.min
@@ -112,8 +114,9 @@ internal class ChannelView(
     silenceListener = false
   }
 
-  fun applyColor(color: Int) {
-    val stateList = ColorStateList.valueOf(channel.seperate(color))
+  fun applyColor(color: Int, backgroundColor: Int) {
+    val visibleColor = ColorUtils.compositeColors(channel.seperate(color), backgroundColor)
+    val stateList = ColorStateList.valueOf(ensureTextContrast(visibleColor, backgroundColor))
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
       findViewById<SeekBar>(R.id.seekbar).apply {
         thumbTintList = stateList

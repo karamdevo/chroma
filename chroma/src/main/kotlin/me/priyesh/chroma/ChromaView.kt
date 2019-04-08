@@ -54,6 +54,9 @@ class ChromaView : RelativeLayout {
 
   private var updateClickHandler: ((Palette.Swatch) -> Unit)? = null
 
+  // TODO: open this up for customization
+  private val backgroundColor = context.getColorAttr(R.attr.colorBackgroundFloating)
+
   constructor(context: Context) : this(DefaultColor, DefaultModel, context)
 
   constructor(@ColorInt initialColor: Int, colorMode: ColorMode, context: Context) : super(context) {
@@ -125,12 +128,15 @@ class ChromaView : RelativeLayout {
 
   fun applyColor() {
     findViewById<View>(R.id.color_view).setBackgroundColor(currentColor)
+
     with(findViewById<View>(R.id.button_bar)) {
-      findViewById<Button>(R.id.positive_button).setTextColor(currentColor)
-      findViewById<Button>(R.id.negative_button).setTextColor(currentColor)
+      val visibleColor = ColorUtils.compositeColors(currentColor, backgroundColor)
+      val textColor = ensureTextContrast(visibleColor, backgroundColor)
+      findViewById<Button>(R.id.positive_button).setTextColor(textColor)
+      findViewById<Button>(R.id.negative_button).setTextColor(textColor)
     }
     channelViews?.forEach {
-      it.applyColor(currentColor)
+      it.applyColor(currentColor, backgroundColor)
     }
 
     val swatch = Palette.Swatch(ColorUtils.compositeColors(currentColor, Color.WHITE), 1)
