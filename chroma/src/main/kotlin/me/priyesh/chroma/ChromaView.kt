@@ -29,17 +29,13 @@ import android.text.TextUtils
 import android.text.TextWatcher
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
-import android.widget.EditText
-import android.widget.LinearLayout
-import android.widget.RelativeLayout
 import me.priyesh.chroma.internal.ChannelView
 import android.graphics.drawable.RippleDrawable
 import android.graphics.drawable.Drawable
 import android.graphics.drawable.ShapeDrawable
+import android.widget.*
 
-
-class ChromaView : RelativeLayout {
+class ChromaView : FrameLayout {
 
   companion object {
     val DefaultColor = Color.GRAY
