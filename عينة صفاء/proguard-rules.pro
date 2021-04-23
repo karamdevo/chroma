@@ -1,4 +1,4 @@
-# Add project specific ProGuard rules here.
+# chroma-sample/proguard-rules.pro
 # By default, the flags in this file are appended to flags specified
 # in /Users/priyeshpatel/Library/Android/sdk/tools/proguard/proguard-android.txt
 # You can edit the include path and order by changing the proguardFiles
